@@ -25,7 +25,7 @@
 <meta name="twitter:image" content="https://tour.bautistaj.dev/imgs/og-preview.jpg">
 
 <!-- PWA — instalable como app -->
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -1319,6 +1319,8 @@ setTimeout(()=>{
   setTimeout(()=>{
     hideSplash();
     // Mostrar tutorial si es la primera vez
+    function showTutorial(){ document.getElementById('tutorial').classList.remove('hide'); }
+    function closeTutorial(){ document.getElementById('tutorial').classList.add('hide'); try{ localStorage.setItem('btaj_tut','1'); }catch(e){} }
     try{ if(!localStorage.getItem('btaj_tut')) showTutorial(); }catch(e){ showTutorial(); }
   },400);
 },600);
