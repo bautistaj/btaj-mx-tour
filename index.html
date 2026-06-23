@@ -1327,12 +1327,18 @@ loop();
 function showTutorial(){ document.getElementById('tutorial').classList.remove('hide'); }
 function closeTutorial(){ document.getElementById('tutorial').classList.add('hide'); try{ localStorage.setItem('btaj_tut','1'); }catch(e){} }
 
-// Recuperar escena WebGL al volver de Instagram en mobile
+// Recuperar texturas WebGL al volver de Instagram en mobile
+function refreshTextures(){
+  scene.traverse(obj => {
+    if(!obj.material) return;
+    [].concat(obj.material).forEach(mat => {
+      if(mat.map) mat.map.needsUpdate = true;
+    });
+  });
+}
 renderer.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); }, false);
-renderer.domElement.addEventListener('webglcontextrestored', () => { loop(); }, false);
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) renderer.render(scene, camera);
-});
+renderer.domElement.addEventListener('webglcontextrestored', () => { refreshTextures(); loop(); }, false);
+document.addEventListener('visibilitychange', () => { if(!document.hidden) refreshTextures(); });
 </script>
 </body>
 </html>
