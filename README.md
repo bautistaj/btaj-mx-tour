@@ -5,9 +5,9 @@ Experiencia inmersiva 3D construida con Three.js para explorar murales de arte u
 ## Estructura
 
 ```
-btaj-tour/
+btaj-mx-tour/
 ├── nginx.conf
-└── www/
+└── btaj-tour/
     ├── index.html
     ├── manifest.json
     └── imgs/
@@ -22,19 +22,15 @@ cd /home/admin/persist
 git clone <repo-url> btaj-mx-tour
 ```
 
-### 2. Copiar o enlazar la config de nginx
+### 2. Agregar la config de nginx
+
+Copia el bloque `location` de `nginx.conf` dentro del `server` block existente de `bautistaj.dev` y recarga:
 
 ```bash
-sudo cp /home/admin/persist/btaj-mx-tour/nginx.conf /etc/nginx/sites-available/bautistaj.dev
-sudo ln -s /etc/nginx/sites-available/bautistaj.dev /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-### 3. HTTPS (si aún no está configurado)
-
-```bash
-sudo certbot --nginx -d bautistaj.dev
-```
+El tour queda disponible en: `https://bautistaj.dev/btaj-tour/`
 
 ---
 
