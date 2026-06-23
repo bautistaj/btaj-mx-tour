@@ -567,7 +567,7 @@ function hideSplash(){
 
 
 updateSplash(10,'INICIANDO MOTOR 3D...');
-const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true,powerPreference:'high-performance'});
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true,powerPreference:'default'});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
 renderer.setSize(window.innerWidth,window.innerHeight);
 renderer.shadowMap.enabled=true;
@@ -723,7 +723,7 @@ function muralTex(m){
   c.strokeStyle=m.hex;c.lineWidth=8;c.shadowColor=m.hex;c.shadowBlur=22;c.strokeRect(4,4,S-8,S-8);c.shadowBlur=0;
   const tex=new THREE.CanvasTexture(cv);
   if(m.img){
-    const img=new Image();img.crossOrigin='anonymous';
+    const img=new Image();
     img.onload=()=>{
       c.clearRect(0,0,S,S);c.fillStyle='#000';c.fillRect(0,0,S,S);
       const iw=img.naturalWidth||S,ih=img.naturalHeight||S;
