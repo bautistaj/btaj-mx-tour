@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#050508">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>BTAJ MX — Street Tour 3D</title>
+<meta name="description" content="Explora el barrio virtual de @btaj_mx — ilustraciones urbanas en 3D. MMA, Wrestling, Fútbol, Street Fighter.">
+<meta name="keywords" content="btaj_mx, arte urbano, ilustración, mural, MMA, wrestling, fútbol, street fighter, México">
+<meta name="author" content="BTAJ MX">
+
+<!-- Open Graph — cómo se ve cuando compartes el link en WhatsApp/IG/FB -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="BTAJ MX — Street Tour 3D 🏙️">
+<meta property="og:description" content="Camina por el barrio virtual de @btaj_mx y descubre sus murales urbanos en 3D. Una experiencia única.">
+<meta property="og:url" content="https://tour.bautistaj.dev">
+<meta property="og:image" content="https://tour.bautistaj.dev/imgs/og-preview.jpg">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BTAJ MX — Street Tour 3D 🏙️">
+<meta name="twitter:description" content="Camina por el barrio virtual de @btaj_mx y descubre sus murales en 3D.">
+<meta name="twitter:image" content="https://tour.bautistaj.dev/imgs/og-preview.jpg">
+
+<!-- PWA — instalable como app -->
+<link rel="manifest" href="/manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#050508;touch-action:none;-webkit-tap-highlight-color:transparent;font-family:'Arial',sans-serif}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+
+/* ── SPLASH ── */
+#splash{position:fixed;inset:0;z-index:300;background:#050508;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+#splash-logo{font-family:'Arial Black',sans-serif;font-size:58px;letter-spacing:8px;
+  color:#fff;text-shadow:0 0 80px #e8321f}
+#splash-logo em{color:#e8321f;font-style:normal}
+#splash-sub{font-size:10px;letter-spacing:6px;color:#ffffff22;margin-bottom:24px}
+#splash-bar-wrap{width:220px;height:3px;background:#1a1c23;border-radius:2px;overflow:hidden}
+#splash-bar{height:100%;width:0%;background:#e8321f;border-radius:2px;transition:width .2s}
+#splash-status{font-size:10px;letter-spacing:2px;color:#ffffff33;margin-top:10px}
+#splash.out{animation:fadeOut .7s forwards}
+@keyframes fadeOut{to{opacity:0;pointer-events:none}}
+
+/* ── HUD ── */
+#hud{position:fixed;top:0;left:0;right:0;padding:14px 18px 20px;
+  display:flex;justify-content:space-between;align-items:center;
+  z-index:20;pointer-events:none;
+  background:linear-gradient(to bottom,#00000099,transparent)}
+#logo{font-family:'Arial Black',sans-serif;font-size:22px;letter-spacing:5px;
+  color:#fff;text-shadow:0 0 20px #e8321f}
+#logo em{color:#e8321f;font-style:normal}
+#counter{background:#00000099;border:1px solid #e8321f66;border-radius:4px;
+  padding:4px 12px;font-size:12px;font-weight:700;letter-spacing:2px;color:#e8321f}
+
+/* ── HINT ── */
+#hint{position:fixed;top:62px;left:50%;transform:translateX(-50%);
+  background:#00000088;border:1px solid #ffffff11;border-radius:100px;
+  padding:6px 16px;font-size:10px;color:#ffffff33;letter-spacing:1px;
+  z-index:20;pointer-events:none;transition:opacity .5s;white-space:nowrap}
+
+/* ── JOYSTICKS ── */
+#joy-wrap{position:fixed;bottom:24px;left:20px;z-index:30;touch-action:none;user-select:none}
+#joy-base{width:130px;height:130px;border-radius:50%;
+  background:rgba(232,50,31,.06);
+  border:2px solid rgba(232,50,31,.25);
+  box-shadow:0 0 0 1px rgba(232,50,31,.08),inset 0 0 30px rgba(0,0,0,.3);
+  position:relative;transition:background .15s}
+#joy-base.pressed{background:rgba(232,50,31,.14)}
+#joy-knob{width:52px;height:52px;border-radius:50%;z-index:2;
+  background:radial-gradient(circle at 35% 35%,#ff5544,#a01f10);
+  box-shadow:0 0 16px #e8321f55, 0 3px 8px #00000066;
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none}
+
+/* Cross guides via SVG inline */
+/* Flechas direccionales SVG dentro de los joysticks */
+.joy-arrows{position:absolute;inset:0;pointer-events:none;opacity:.35}
+.joy-arrows.red .arr-line{stroke:#e8321f}
+.joy-arrows.blue .arr-line{stroke:#4488cc}
+/* Punto central de reposo */
+.joy-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:6px;height:6px;border-radius:50%;pointer-events:none}
+.joy-center.red{background:#e8321f55}
+.joy-center.blue{background:#4488cc55}
+/* Labels */
+#joy-label{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
+  font-size:10px;letter-spacing:2px;color:#e8321faa;white-space:nowrap;text-transform:uppercase;font-weight:700}
+
+#camjoy-wrap{position:fixed;bottom:24px;right:20px;z-index:30;touch-action:none;user-select:none}
+#camjoy-base{width:130px;height:130px;border-radius:50%;
+  background:rgba(68,136,204,.05);
+  border:2px solid rgba(68,136,204,.22);
+  box-shadow:0 0 0 1px rgba(68,136,204,.07),inset 0 0 30px rgba(0,0,0,.3);
+  position:relative;transition:background .15s}
+#camjoy-base.pressed{background:rgba(68,136,204,.13)}
+#camjoy-knob{width:52px;height:52px;border-radius:50%;z-index:2;
+  background:radial-gradient(circle at 35% 35%,#5599ee,#1a3a70);
+  box-shadow:0 0 14px #4488cc55, 0 3px 8px #00000066;
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none}
+
+#camjoy-label{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
+  font-size:10px;letter-spacing:2px;color:#4488ccaa;white-space:nowrap;text-transform:uppercase;font-weight:700}
+
+/* ── INTERACT ── */
+#interact-btn{position:fixed;bottom:160px;left:50%;transform:translateX(-50%);
+  z-index:30;background:linear-gradient(135deg,#e8321f,#a01f10);
+  color:#fff;border:none;border-radius:8px;
+  padding:12px 26px;font-size:14px;font-weight:700;letter-spacing:2px;
+  cursor:pointer;display:none;white-space:nowrap;
+  box-shadow:0 0 20px #e8321f55,0 4px 16px #00000088;
+  animation:ibpulse 1.8s infinite}
+@keyframes ibpulse{0%,100%{box-shadow:0 0 20px #e8321f55,0 4px 16px #00000088}
+  50%{box-shadow:0 0 34px #e8321f99,0 4px 16px #00000088}}
+
+/* ── MINIMAP ── */
+#minimap{position:fixed;top:66px;right:16px;width:96px;height:96px;
+  border-radius:8px;border:1.5px solid #3a3d55;
+  background:#08090e;overflow:hidden;z-index:20;
+  box-shadow:0 0 0 1px #4488cc22, 0 4px 16px #00000088}
+#minimap-title{position:absolute;top:4px;left:0;right:0;
+  text-align:center;font-size:7px;letter-spacing:2px;color:#4488cc66;
+  font-weight:700;z-index:1;pointer-events:none}
+#minimap-border{position:absolute;inset:0;border-radius:7px;
+  border:1px solid #4488cc18;pointer-events:none;z-index:2}
+
+/* ── MODAL — medium bottom sheet ── */
+#modal{position:fixed;inset:0;z-index:100;display:flex;align-items:flex-end;
+  opacity:0;pointer-events:none;transition:opacity .28s}
+#modal.open{opacity:1;pointer-events:all}
+#modal-bg{position:absolute;inset:0;background:#00000077;backdrop-filter:blur(6px)}
+#modal-card{position:relative;z-index:1;width:100%;height:54vh;
+  background:linear-gradient(170deg,#161820 0%,#111318 100%);
+  border-top:1.5px solid #e8321f;border-radius:18px 18px 0 0;
+  display:flex;flex-direction:row;overflow:hidden;
+  transform:translateY(100%);transition:transform .36s cubic-bezier(.32,.72,0,1)}
+#modal.open #modal-card{transform:translateY(0)}
+/* Imagen izquierda */
+#modal-left{width:42%;height:100%;flex-shrink:0;position:relative;overflow:hidden}
+#modal-img{width:100%;height:100%;object-fit:cover;display:block}
+#modal-fallback{width:100%;height:100%;display:none;align-items:center;
+  justify-content:center;font-size:80px;background:#1a1c23}
+#modal-series-tag{position:absolute;top:12px;left:12px;
+  background:#e8321f;color:#fff;font-size:10px;font-weight:700;
+  letter-spacing:1.5px;padding:3px 9px;border-radius:3px}
+#modal-views-tag{position:absolute;bottom:10px;right:8px;
+  background:#00000099;color:#ffffff77;font-size:10px;padding:3px 8px;border-radius:3px}
+/* Contenido derecho */
+#modal-right{flex:1;display:flex;flex-direction:column;
+  padding:16px 16px 20px;overflow:hidden;gap:8px}
+#modal-handle{width:32px;height:3px;background:#2a2d3a;border-radius:2px;
+  align-self:center;flex-shrink:0}
+#modal-title{font-size:20px;font-weight:900;letter-spacing:1.5px;
+  color:#fff;line-height:1.1}
+#modal-series-pill{display:inline-block;background:#e8321f22;
+  border:1px solid #e8321f44;border-radius:100px;
+  padding:3px 12px;font-size:10px;font-weight:700;
+  letter-spacing:2px;color:#e8321fcc;align-self:flex-start}
+#modal-desc{font-size:12px;color:#ffffff55;line-height:1.6;flex:1;
+  display:-webkit-box;-webkit-line-clamp:4;
+  -webkit-box-orient:vertical;overflow:hidden}
+#modal-actions{display:flex;gap:8px;margin-top:auto}
+.btn-share{flex:1;padding:11px 0;border-radius:8px;border:none;
+  background:linear-gradient(135deg,#e8321f,#a01f10);
+  color:#fff;font-size:12px;font-weight:700;letter-spacing:1.5px;cursor:pointer}
+.btn-follow{flex:1;padding:11px 0;border-radius:8px;border:none;
+  background:linear-gradient(135deg,#f09433,#dc2743,#bc1888);
+  color:#fff;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer}
+.btn-close{width:40px;padding:11px 0;border-radius:8px;
+  border:1px solid #2a2d3a;background:transparent;
+  color:#ffffff33;font-size:14px;cursor:pointer;flex-shrink:0}
+
+/* ── GALERÍA ── */
+#gallery-btn{position:fixed;top:68px;left:16px;z-index:20;
+  background:#00000099;border:1px solid #2a2d3a;border-radius:6px;
+  padding:6px 12px;font-size:11px;font-weight:700;letter-spacing:1px;
+  color:#ffffff66;cursor:pointer}
+#gallery{position:fixed;inset:0;z-index:150;background:#050508ee;
+  display:none;flex-direction:column;overflow:hidden}
+#gallery.open{display:flex}
+#gallery-header{padding:18px 20px 14px;display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid #1e2030}
+#gallery-title{font-family:'Arial Black',sans-serif;font-size:20px;letter-spacing:3px;color:#fff}
+#gallery-close{background:transparent;border:1px solid #2a2d3a;color:#ffffff55;
+  border-radius:6px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer}
+#gallery-grid{flex:1;overflow-y:auto;padding:16px;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.g-card{border-radius:10px;overflow:hidden;position:relative;aspect-ratio:3/4;
+  cursor:pointer;border:1px solid #1e2030;transition:transform .15s}
+.g-card:active{transform:scale(.97)}
+.g-card img{width:100%;height:100%;object-fit:cover;display:block}
+.g-card-fallback{width:100%;height:100%;display:flex;align-items:center;
+  justify-content:center;font-size:48px}
+.g-card-info{position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,#000000cc);
+  padding:20px 10px 10px}
+.g-card-title{font-size:13px;font-weight:700;color:#fff;letter-spacing:1px}
+.g-card-series{font-size:10px;color:#ffffff55;margin-top:2px}
+.g-card-seen{position:absolute;top:8px;right:8px;width:8px;height:8px;
+  border-radius:50%;background:#e8321f;display:none}
+.g-card.seen .g-card-seen{display:block}
+
+/* ── TUTORIAL ── */
+#tutorial{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;
+  background:#000000bb;backdrop-filter:blur(4px);transition:opacity .4s}
+#tutorial.hide{opacity:0;pointer-events:none}
+#tut-card{background:#12131a;border:1px solid #2a2d3a;border-radius:20px;
+  padding:28px 24px 24px;width:88%;max-width:340px;text-align:center}
+#tut-title{font-family:'Arial Black',sans-serif;font-size:16px;letter-spacing:3px;
+  color:#fff;margin-bottom:6px}
+#tut-title em{color:#e8321f;font-style:normal}
+#tut-sub{font-size:11px;color:#ffffff44;letter-spacing:2px;margin-bottom:24px}
+#tut-controls{display:flex;justify-content:center;gap:28px;margin-bottom:24px}
+.tut-joy{display:flex;flex-direction:column;align-items:center;gap:10px}
+.tut-circle{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:28px;position:relative}
+.tut-circle.red{background:rgba(232,50,31,.1);border:2px solid rgba(232,50,31,.4)}
+.tut-circle.blue{background:rgba(68,136,204,.1);border:2px solid rgba(68,136,204,.35)}
+.tut-arrow{position:absolute;font-size:11px;opacity:.6}
+.tut-arrow.up{top:5px;left:50%;transform:translateX(-50%)}
+.tut-arrow.dn{bottom:5px;left:50%;transform:translateX(-50%)}
+.tut-arrow.lt{left:5px;top:50%;transform:translateY(-50%)}
+.tut-arrow.rt{right:5px;top:50%;transform:translateY(-50%)}
+.tut-name{font-size:11px;font-weight:700;letter-spacing:2px}
+.tut-name.red{color:#e8321f}
+.tut-name.blue{color:#4488cc}
+.tut-desc{font-size:11px;color:#ffffff44;margin-top:2px}
+#tut-divider{width:1px;height:72px;background:#2a2d3a;align-self:center}
+#tut-btn{width:100%;padding:13px;border-radius:8px;border:none;
+  background:linear-gradient(135deg,#e8321f,#a01f10);
+  color:#fff;font-size:13px;font-weight:700;letter-spacing:2px;cursor:pointer}
+#tut-skip{font-size:10px;color:#ffffff22;margin-top:10px;cursor:pointer;letter-spacing:1px}
+
+/* ── INSTAGRAM PANEL ── */
+#modal-ig{border-top:1px solid #1e2030;padding:14px 16px 0;margin-top:4px}
+#modal-ig-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+#modal-ig-logo{width:22px;height:22px;border-radius:6px;
+  background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+  display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+#modal-ig-handle{font-size:11px;font-weight:700;color:#ffffff66;letter-spacing:1px}
+#modal-ig-badge{margin-left:auto;font-size:9px;letter-spacing:1px;
+  background:#1e2030;border:1px solid #2a2d3a;color:#ffffff33;
+  padding:2px 8px;border-radius:100px}
+#modal-ig-badge.live{border-color:#1e8449;color:#2ecc71}
+#modal-ig-stats{display:flex;gap:10px;margin-bottom:14px}
+.ig-stat{flex:1;background:#0e0f16;border:1px solid #1a1c26;border-radius:8px;
+  padding:8px 6px;text-align:center}
+.ig-stat-val{font-family:'Arial Black',sans-serif;font-size:16px;
+  color:#fff;letter-spacing:-0.5px;line-height:1}
+.ig-stat-lbl{font-size:9px;color:#ffffff33;letter-spacing:1px;
+  margin-top:3px;text-transform:uppercase}
+.ig-stat.likes .ig-stat-val{color:#e8321f}
+.ig-stat.reach .ig-stat-val{color:#f5a500}
+#modal-ig-actions{display:flex;gap:8px;padding-bottom:4px}
+#btn-ig-open{flex:1;padding:11px;border-radius:7px;border:none;
+  background:linear-gradient(135deg,#f09433,#dc2743,#bc1888);
+  color:#fff;font-size:12px;font-weight:700;letter-spacing:1.5px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px}
+#btn-ig-share{padding:11px 14px;border-radius:7px;border:1px solid #2a2d3a;
+  background:transparent;color:#ffffff44;font-size:12px;font-weight:700;
+  letter-spacing:1px;cursor:pointer}
+.ig-demo-tag{text-align:center;font-size:9px;color:#ffffff18;
+  letter-spacing:1px;margin-top:8px;padding-bottom:8px}
+
+/* ── SOCIAL ACTIONS ── */
+#modal-social{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px}
+
+/* Botón principal — Compartir */
+#btn-share-main{width:100%;padding:13px;border-radius:10px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#e8321f,#a01f10);
+  color:#fff;font-size:13px;font-weight:700;letter-spacing:2px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 16px #e8321f33}
+
+/* Fila de acciones secundarias */
+#social-row{display:flex;gap:8px}
+
+/* Botón seguir Instagram */
+#btn-follow{flex:1;padding:11px 8px;border-radius:10px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+  color:#fff;font-size:11px;font-weight:700;letter-spacing:1px;
+  display:flex;align-items:center;justify-content:center;gap:6px}
+
+/* Botón like interno */
+#btn-like{width:52px;height:44px;border-radius:10px;cursor:pointer;
+  border:1.5px solid #2a2d3a;background:#0e0f16;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  transition:all .2s;flex-shrink:0}
+#btn-like.liked{border-color:#e8321f44;background:#e8321f11}
+#btn-like-icon{font-size:16px;line-height:1;transition:transform .15s}
+#btn-like.liked #btn-like-icon{transform:scale(1.25)}
+#btn-like-count{font-size:8px;font-weight:700;color:#ffffff33;letter-spacing:.5px;line-height:1}
+#btn-like.liked #btn-like-count{color:#e8321f}
+
+/* Botón ver en Instagram (pequeño) */
+#btn-ig-view{flex:1;padding:11px 8px;border-radius:10px;
+  border:1.5px solid #2a2d3a;background:#0e0f16;
+  color:#ffffff55;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:5px}
+
+/* Stats de IG debajo */
+#modal-ig-stats-row{display:flex;gap:8px}
+.ig-mini-stat{flex:1;text-align:center;padding:8px 4px;
+  background:#0a0b10;border:1px solid #1a1c26;border-radius:8px}
+.ig-mini-val{font-size:15px;font-weight:900;color:#fff;letter-spacing:-0.5px;line-height:1}
+.ig-mini-lbl{font-size:8px;color:#ffffff33;letter-spacing:1px;margin-top:2px;text-transform:uppercase}
+.ig-mini-stat.likes .ig-mini-val{color:#e8321f}
+.ig-mini-stat.reach .ig-mini-val{color:#f5a500}
+
+#ig-source{text-align:center;font-size:9px;color:#ffffff15;letter-spacing:1px;
+  margin-top:2px;padding-bottom:2px}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div id="splash-logo">BTAJ<em>MX</em></div>
+  <div id="splash-sub">STREET TOUR 3D — @btaj_mx</div>
+  <div id="splash-bar-wrap"><div id="splash-bar"></div></div>
+  <div id="splash-status">CARGANDO BARRIO...</div>
+  <div id="splash-ig" onclick="window.open('https://www.instagram.com/btaj_mx/','_blank')"
+    style="margin-top:28px;cursor:pointer;display:flex;align-items:center;gap:8px;
+    background:linear-gradient(135deg,#f09433,#dc2743,#bc1888);
+    padding:8px 20px;border-radius:100px;font-size:11px;font-weight:700;
+    letter-spacing:2px;color:#fff;opacity:.85">
+    <span style="font-size:14px">📸</span> @btaj_mx en Instagram
+  </div>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="logo" onclick="window.open('https://www.instagram.com/btaj_mx/','_blank')"
+    style="cursor:pointer">BTAJ<em>MX</em></div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div id="counter">0 / 8</div>
+    <div id="hud-ig"
+      onclick="window.open('https://www.instagram.com/btaj_mx/','_blank')"
+      style="cursor:pointer;pointer-events:all;
+      background:linear-gradient(135deg,#f09433,#dc2743,#bc1888);
+      border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;
+      letter-spacing:1px;color:#fff;display:flex;align-items:center;gap:4px">
+      <span style="font-size:12px">📸</span> Seguir
+    </div>
+  </div>
+</div>
+<div id="hint">izq: caminar · der: cámara · acércate a un mural</div>
+
+<!-- GALLERY BTN -->
+<button id="gallery-btn" onclick="openGallery()">🖼 GALERÍA</button>
+
+<!-- JOYSTICKS -->
+<div id="joy-wrap">
+  <div id="joy-base">
+    <svg class="joy-arrows red" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
+      <!-- Flecha arriba -->
+      <polyline class="arr-line" points="65,18 58,30 65,24 72,30 65,18" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Flecha abajo -->
+      <polyline class="arr-line" points="65,112 58,100 65,106 72,100 65,112" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Flecha izquierda -->
+      <polyline class="arr-line" points="18,65 30,58 24,65 30,72 18,65" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Flecha derecha -->
+      <polyline class="arr-line" points="112,65 100,58 106,65 100,72 112,65" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Líneas guía tenues -->
+      <line class="arr-line" x1="65" y1="34" x2="65" y2="96" stroke-width="0.5" stroke-dasharray="3,4" opacity="0.4"/>
+      <line class="arr-line" x1="34" y1="65" x2="96" y2="65" stroke-width="0.5" stroke-dasharray="3,4" opacity="0.4"/>
+    </svg>
+    <div class="joy-center red"></div>
+    <div id="joy-knob"></div>
+  </div>
+  <div id="joy-label">MOVER</div>
+</div>
+<div id="camjoy-wrap">
+  <div id="camjoy-base">
+    <svg class="joy-arrows blue" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
+      <!-- Flecha arriba (inclinar cámara) -->
+      <polyline class="arr-line" points="65,18 58,30 65,24 72,30 65,18" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Flecha abajo -->
+      <polyline class="arr-line" points="65,112 58,100 65,106 72,100 65,112" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Flecha izquierda (girar cámara) -->
+      <polyline class="arr-line" points="18,65 30,58 24,65 30,72 18,65" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Flecha derecha -->
+      <polyline class="arr-line" points="112,65 100,58 106,65 100,72 112,65" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Ícono de ojo en centro — indica cámara -->
+      <ellipse class="arr-line" cx="65" cy="65" rx="10" ry="6.5" fill="none" stroke-width="1.2"/>
+      <circle class="arr-line" cx="65" cy="65" r="3" fill="none" stroke-width="1.2"/>
+      <!-- Líneas guía tenues -->
+      <line class="arr-line" x1="65" y1="34" x2="65" y2="96" stroke-width="0.5" stroke-dasharray="3,4" opacity="0.4"/>
+      <line class="arr-line" x1="34" y1="65" x2="96" y2="65" stroke-width="0.5" stroke-dasharray="3,4" opacity="0.4"/>
+    </svg>
+    <div class="joy-center blue"></div>
+    <div id="camjoy-knob"></div>
+    <div id="camjoy-label">CÁMARA</div>
+  </div>
+</div>
+
+<button id="interact-btn" onclick="interactMural()">👁 VER MURAL</button>
+<div id="minimap"><div id="minimap-title">MAPA</div><canvas id="mm" width="96" height="96"></canvas><div id="minimap-border"></div></div>
+
+<canvas id="c"></canvas>
+
+<!-- MODAL -->
+<div id="modal">
+  <div id="modal-bg" onclick="closeModal()"></div>
+  <div id="modal-card">
+    <div id="modal-left">
+      <img id="modal-img" src="" alt="">
+      <div id="modal-fallback"></div>
+      <div id="modal-series-tag"></div>
+      <div id="modal-views-tag"></div>
+    </div>
+    <div id="modal-right">
+      <div id="modal-handle"></div>
+      <div id="modal-title"></div>
+      <div id="modal-series-pill"></div>
+      <div id="modal-desc"></div>
+      <div id="modal-actions">
+        <button class="btn-share" onclick="shareNow()">↑ COMPARTIR</button>
+        <button class="btn-follow" onclick="openInInstagram()">📸 VER POST</button>
+        <button class="btn-close" onclick="closeModal()">✕</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- TUTORIAL -->
+<div id="tutorial" class="hide">
+  <div id="tut-card">
+    <div id="tut-title">BTAJ<em>MX</em></div>
+    <div id="tut-sub">@btaj_mx · STREET TOUR 3D</div>
+    <div id="tut-controls">
+      <div class="tut-joy">
+        <div class="tut-circle red">
+          🚶
+          <span class="tut-arrow up" style="color:#e8321f">▲</span>
+          <span class="tut-arrow dn" style="color:#e8321f33">▼</span>
+          <span class="tut-arrow lt" style="color:#e8321f33">◀</span>
+          <span class="tut-arrow rt" style="color:#e8321f33">▶</span>
+        </div>
+        <div class="tut-name red">MOVER</div>
+        <div class="tut-desc">Joystick izquierdo</div>
+      </div>
+      <div id="tut-divider"></div>
+      <div class="tut-joy">
+        <div class="tut-circle blue">
+          📷
+          <span class="tut-arrow up" style="color:#4488cc33">▲</span>
+          <span class="tut-arrow dn" style="color:#4488cc33">▼</span>
+          <span class="tut-arrow lt" style="color:#4488cc33">◀</span>
+          <span class="tut-arrow rt" style="color:#4488cc">▶</span>
+        </div>
+        <div class="tut-name blue">CÁMARA</div>
+        <div class="tut-desc">Joystick derecho</div>
+      </div>
+    </div>
+    <button id="tut-btn" onclick="closeTutorial()">¡ENTENDIDO! EXPLORAR</button>
+    <div id="tut-skip" onclick="closeTutorial()">no mostrar de nuevo</div>
+  </div>
+</div>
+
+<!-- GALLERY -->
+<div id="gallery">
+  <div id="gallery-header">
+    <div id="gallery-title">BTAJ<em style="color:#e8321f;font-style:normal">MX</em></div>
+    <button id="gallery-close" onclick="closeGallery()">✕ CERRAR</button>
+  </div>
+  <div id="gallery-grid"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+
+// ── INSTAGRAM CONFIG ─────────────────────────────────────────────────────────
+// Cuando tengas el backend listo, cambia DEMO_MODE a false
+// y pon tu endpoint en API_ENDPOINT
+const IG_CONFIG = {
+  DEMO_MODE: true,
+  API_ENDPOINT: '/api/instagram-metrics', // tu Vercel Function aquí
+  IG_HANDLE: '@btaj_mx',
+};
+
+const MURALS=[
+  {id:1,title:"E. Honda",series:"ARCADE",
+   desc:"E. Honda, cuyo nombre completo es Edmond Honda, es un personaje ficticio creado por Capcom para la saga de videojuegos de lucha Street Fighter.",
+   hex:"#c0392b", emoji:"⚔️",img:"imgs/ehonda.jpeg",
+   ig:{likes:3763,comments:148,reach:24800,postUrl:"https://www.instagram.com/p/DYQgjBUEb9y/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135492"}},
+
+
+  {id:2,title:"Dhalsim",series:"ARCADE",
+   desc:"Originario de Kerala, India, es un maestro del yoga que utiliza poderes místicos como extender sus extremidades, escupir fuego y teletransportarse para mantener a sus rivales a distancia.",
+   hex:"#1e8449",emoji:"🤼",img:"imgs/dhalsim.jpeg",
+   ig:{likes:1483,comments:67,reach:9200,postUrl:"https://www.instagram.com/p/DY0nKlhkWoF/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135493"}},
+  
+   {id:3,title:"Zangief",series:"ARCADE",
+   desc:"Zangief, apodado el 'Ciclón Rojo', es un personaje ficticio de la saga Street Fighter de Capcom, debutando en Street Fighter II: The World Warrior (1991).  Es un luchador profesional de Sambo y lucha libre originario de la antigua URSS",
+   hex:"#1a5276",emoji:"🥊",img:"imgs/zangief.jpeg",
+   ig:{likes:1150,comments:43,reach:7600,postUrl:"https://www.instagram.com/p/DYiiGCXkbCB/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135494"}},
+  
+   {id:4,title:"Blanka",series:"ARCADE",
+   desc:"Es un hombre feral de la selva brasileña con piel verde y la capacidad de generar electricidad, siendo originalmente un niño llamado Jimmy que sobrevivió a un accidente aéreo en el Amazonas. ",
+   hex:"#117a65",emoji:"⚽",img:"imgs/blanka.jpeg",
+   ig:{likes:612,comments:29,reach:4100,postUrl:"https://www.instagram.com/p/DZGlNHbkeYx/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135495"}},
+
+  {id:5,title:"Ilia vs Gaethje",series:"MMA",
+   desc:"Una de las grandes peleas de la historia de la UFC.",
+   hex:"#196f3d",emoji:"🇲🇽",img:"imgs/ilia_vs_gaethje.jpeg",
+   ig:{likes:2023,comments:88,reach:14500,postUrl:"https://www.instagram.com/p/DZjWC_1ERth/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135496"}},
+
+  {id:6,title:"Gane vs Poatan",series:"MMA",
+   desc:"Una pelea que pudo ser histórica al tener el primer triple campeon de la UFC.",
+   hex:"#6c3483",emoji:"🎮",img:"imgs/poatan_vs_gane.jpeg",
+   ig:{likes:1092,comments:55,reach:7200,postUrl:"https://www.instagram.com/p/DZk1WAkkbV8/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135497"}},
+
+  {id:7,title:"El Catrin",series:"MMA",
+   desc:"Representante de las MMA en México y gran ejemplo a seguir.",
+   hex:"#784212",emoji:"🚲",img:"imgs/el_catrin.png",
+   ig:{likes:671,comments:31,reach:4800,postUrl:"https://www.instagram.com/p/DZYqb4XkUwj/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135498"}},
+
+  {id:8,title:"Panchito Ortiz",series:"MMA",
+   desc:"Representante de las MMA en México y gran ejemplo a seguir.",
+   hex:"#4a235a",emoji:"🏆",img:"imgs/panchito_ortiz.png",
+   ig:{likes:582,comments:22,reach:3900,postUrl:"https://www.instagram.com/p/DZqwcU3kSV4/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135499"}},
+];
+
+// ── INSTAGRAM METRICS LOADER ──────────────────────────────────────────────────
+async function loadIGMetrics() {
+  if(IG_CONFIG.DEMO_MODE) {
+    console.log('BTAJ: modo demo — usando métricas de ejemplo');
+    return; // ya están en el array
+  }
+  try {
+    const res = await fetch(IG_CONFIG.API_ENDPOINT);
+    if(!res.ok) throw new Error('API error '+res.status);
+    const data = await res.json(); // [{mediaId, likes, comments, reach}, ...]
+    data.forEach(item => {
+      const mural = MURALS.find(m => m.ig.mediaId === item.mediaId);
+      if(mural) {
+        mural.ig.likes    = item.likes;
+        mural.ig.comments = item.comments;
+        mural.ig.reach    = item.reach;
+      }
+    });
+    console.log('BTAJ: métricas de Instagram cargadas ✓');
+    // Actualizar modal si está abierto
+    if(currentMural) openModal(currentMural);
+  } catch(e) {
+    console.warn('BTAJ: no se pudieron cargar métricas de IG →', e.message);
+  }
+}
+
+
+let splashProgress=0;
+function updateSplash(pct,msg){
+  document.getElementById('splash-bar').style.width=pct+'%';
+  if(msg) document.getElementById('splash-status').textContent=msg;
+}
+function hideSplash(){
+  const s=document.getElementById('splash');
+  s.classList.add('out');
+  setTimeout(()=>s.style.display='none',700);
+}
+
+
+updateSplash(10,'INICIANDO MOTOR 3D...');
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
+renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.setClearColor(0x050508);
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.1;
+
+const scene=new THREE.Scene();
+scene.fog=new THREE.FogExp2(0x050508,.016);
+const camera=new THREE.PerspectiveCamera(65,window.innerWidth/window.innerHeight,.1,140);
+window.addEventListener('resize',()=>{
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+});
+
+
+updateSplash(20,'CONSTRUYENDO CIELO...');
+(()=>{
+  const S=512,cv=document.createElement('canvas');cv.width=S;cv.height=S;
+  const c=cv.getContext('2d');
+  // Gradiente profundo — azul-negro arriba, morado oscuro en horizonte
+  const g=c.createLinearGradient(0,0,0,S);
+  g.addColorStop(0,'#000005');
+  g.addColorStop(.3,'#02020e');
+  g.addColorStop(.65,'#06051a');
+  g.addColorStop(.85,'#100820');
+  g.addColorStop(1,'#1a0a18');
+  c.fillStyle=g;c.fillRect(0,0,S,S);
+  // Nebulosa tenue (mancha de color en el cielo)
+  const neb=c.createRadialGradient(S*.3,S*.2,0,S*.3,S*.2,S*.35);
+  neb.addColorStop(0,'rgba(80,30,120,.08)');neb.addColorStop(1,'rgba(0,0,0,0)');
+  c.fillStyle=neb;c.fillRect(0,0,S,S);
+  // Estrellas — más cantidad y más brillantes
+  for(let i=0;i<700;i++){
+    const x=Math.random()*S,y=Math.random()*S*.78;
+    const r=Math.random()<.03?2:Math.random()<.12?1.2:.4;
+    const bright=.2+Math.random();
+    c.beginPath();c.arc(x,y,r,0,Math.PI*2);
+    c.fillStyle=`rgba(255,255,255,${bright})`;c.fill();
+    // Halo en estrellas grandes
+    if(r>1.5){
+      const h=c.createRadialGradient(x,y,0,x,y,r*4);
+      h.addColorStop(0,`rgba(255,255,255,.15)`);h.addColorStop(1,'rgba(0,0,0,0)');
+      c.fillStyle=h;c.beginPath();c.arc(x,y,r*4,0,Math.PI*2);c.fill();
+    }
+  }
+  // Glow rojo-naranja en el horizonte (ciudad iluminada)
+  const hg=c.createLinearGradient(0,S*.6,0,S);
+  hg.addColorStop(0,'rgba(232,50,31,0)');
+  hg.addColorStop(.5,'rgba(200,60,20,.1)');
+  hg.addColorStop(.8,'rgba(232,80,10,.18)');
+  hg.addColorStop(1,'rgba(150,40,60,.28)');
+  c.fillStyle=hg;c.fillRect(0,S*.6,S,S*.4);
+  // Línea de horizonte sutil
+  c.fillStyle='rgba(232,100,30,.06)';
+  c.fillRect(0,S*.82,S,2);
+  scene.add(new THREE.Mesh(new THREE.SphereGeometry(110,32,16),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),side:THREE.BackSide})));
+})();
+
+
+updateSplash(30,'INSTALANDO LUCES...');
+scene.add(new THREE.AmbientLight(0x151520,5));
+const moon=new THREE.DirectionalLight(0x223355,2);
+moon.position.set(-25,45,-15);
+moon.castShadow=true;
+moon.shadow.mapSize.set(2048,2048);
+moon.shadow.camera.left=-55;moon.shadow.camera.right=55;
+moon.shadow.camera.top=55;moon.shadow.camera.bottom=-55;
+moon.shadow.bias=-.001;
+scene.add(moon);
+
+// Solo 8 postes estratégicos (max PointLights en móvil = 8-10)
+const LAMP_POS=[[-11,-11],[11,-11],[-11,11],[11,11],[0,-11],[0,11],[-11,0],[11,0]];
+LAMP_POS.forEach(([x,z])=>{
+  const pl=new THREE.PointLight(0xff9933,2.2,22);pl.position.set(x,5.5,z);scene.add(pl);
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(.04,.07,5.5,8),new THREE.MeshLambertMaterial({color:0x1e2030}));
+  post.position.set(x,2.75,z);scene.add(post);
+  const arm=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.8,6),new THREE.MeshLambertMaterial({color:0x1e2030}));
+  arm.rotation.z=Math.PI/2;arm.position.set(x+.4,5.6,z);scene.add(arm);
+  const bulb=new THREE.Mesh(new THREE.SphereGeometry(.14,8,8),new THREE.MeshBasicMaterial({color:0xff9933}));
+  bulb.position.set(x+.8,5.6,z);scene.add(bulb);
+});
+
+
+updateSplash(40,'GENERANDO TEXTURAS...');
+function brickTex(base,v=16){
+  const S=256,cv=document.createElement('canvas');cv.width=S;cv.height=S;
+  const c=cv.getContext('2d');
+  const r=parseInt(base.slice(1,3),16),g2=parseInt(base.slice(3,5),16),b=parseInt(base.slice(5,7),16);
+  c.fillStyle=base;c.fillRect(0,0,S,S);
+  const bw=32,bh=16;
+  for(let row=0;row<S/bh;row++) for(let col=0;col<S/bw+1;col++){
+    const ox=row%2?bw/2:0,dv=(Math.random()-.5)*v;
+    c.fillStyle=`rgb(${r+dv|0},${g2+dv|0},${b+dv|0})`;c.fillRect(col*bw-ox+1,row*bh+1,bw-2,bh-2);
+  }
+  c.fillStyle=`rgb(${r-22|0},${g2-22|0},${b-22|0})`;
+  for(let i=0;i<=S/bh;i++) c.fillRect(0,i*bh,S,1);
+  for(let i=0;i<=S/bw;i++) c.fillRect(i*bw,0,1,S);
+  const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(3,4);return t;
+}
+function concTex(){
+  const S=256,cv=document.createElement('canvas');cv.width=S;cv.height=S;
+  const c=cv.getContext('2d');c.fillStyle='#161820';c.fillRect(0,0,S,S);
+  for(let i=0;i<6000;i++){const x=Math.random()*S,y=Math.random()*S,v=(Math.random()-.5)*28;c.fillStyle=`rgba(${140+v|0},${140+v|0},${150+v|0},.09)`;c.fillRect(x,y,1,1);}
+  const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2,3);return t;
+}
+function roadTex(){
+  const S=512,cv=document.createElement('canvas');cv.width=S;cv.height=S;
+  const c=cv.getContext('2d');
+  // Base más oscura con tono azulado para diferenciarse del cielo
+  c.fillStyle='#0c0e14';c.fillRect(0,0,S,S);
+  // Grain de asfalto
+  for(let i=0;i<10000;i++){
+    const x=Math.random()*S,y=Math.random()*S,v=Math.random()*18;
+    c.fillStyle=`rgba(${v+5|0},${v+5|0},${v+9|0},.5)`;c.fillRect(x,y,1,1);
+  }
+  // Líneas de desgaste horizontales sutiles
+  for(let i=0;i<12;i++){
+    const y=Math.random()*S;
+    c.fillStyle='rgba(255,255,255,.015)';
+    c.fillRect(0,y,S,Math.random()*2+1);
+  }
+  // Manchas de aceite (círculos muy sutiles)
+  for(let i=0;i<8;i++){
+    const x=Math.random()*S,y=Math.random()*S,r=10+Math.random()*20;
+    const g=c.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0,'rgba(40,20,60,.12)');g.addColorStop(1,'rgba(0,0,0,0)');
+    c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();
+  }
+  const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(10,10);return t;
+}
+const TX=[brickTex('#1c1e2e'),brickTex('#191b28',12),brickTex('#1a1c22',20),concTex()];
+const RT=roadTex(),CT=concTex();
+
+
+function muralTex(m){
+  const S=1024,cv=document.createElement('canvas');cv.width=S;cv.height=S;
+  const c=cv.getContext('2d');
+  c.fillStyle=m.hex+'ee';c.fillRect(0,0,S,S);
+  const g=c.createRadialGradient(S/2,S/2,60,S/2,S/2,S*.75);
+  g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.6)');
+  c.fillStyle=g;c.fillRect(0,0,S,S);
+  c.font='320px serif';c.textAlign='center';c.textBaseline='middle';c.fillText(m.emoji,S/2,S*.44);
+  const st=c.createLinearGradient(0,S*.72,0,S);
+  st.addColorStop(0,'rgba(0,0,0,0)');st.addColorStop(.35,'rgba(0,0,0,.88)');st.addColorStop(1,'rgba(0,0,0,.95)');
+  c.fillStyle=st;c.fillRect(0,S*.72,S,S*.28);
+  c.fillStyle='#fff';c.font='bold 64px Arial Black';c.textAlign='center';c.fillText(m.title,S/2,S*.9);
+  c.fillStyle=m.hex;c.fillRect(18,18,175,40);
+  c.fillStyle='#fff';c.font='bold 19px Arial';c.textAlign='left';c.fillText(m.series,28,44);
+  c.globalAlpha=.15;c.font='bold 22px Arial Black';c.textAlign='right';c.fillText('BTAJ MX',S-16,S-16);c.globalAlpha=1;
+  c.strokeStyle=m.hex;c.lineWidth=8;c.shadowColor=m.hex;c.shadowBlur=22;c.strokeRect(4,4,S-8,S-8);c.shadowBlur=0;
+  const tex=new THREE.CanvasTexture(cv);
+  if(m.img){
+    const img=new Image();img.crossOrigin='anonymous';
+    img.onload=()=>{
+      c.clearRect(0,0,S,S);c.fillStyle='#000';c.fillRect(0,0,S,S);
+      const iw=img.naturalWidth||S,ih=img.naturalHeight||S;
+      const sc=Math.max(S/iw,S/ih);
+      c.drawImage(img,(S-iw*sc)/2,(S-ih*sc)/2,iw*sc,ih*sc);
+      const ov=c.createLinearGradient(0,S*.68,0,S);
+      ov.addColorStop(0,'rgba(0,0,0,0)');ov.addColorStop(.4,'rgba(0,0,0,.88)');ov.addColorStop(1,'rgba(0,0,0,.96)');
+      c.fillStyle=ov;c.fillRect(0,S*.68,S,S*.32);
+      c.fillStyle='#fff';c.font='bold 64px Arial Black';c.textAlign='center';c.fillText(m.title,S/2,S*.9);
+      c.fillStyle=m.hex;c.fillRect(18,18,175,40);
+      c.fillStyle='#fff';c.font='bold 19px Arial';c.textAlign='left';c.fillText(m.series,28,44);
+      c.globalAlpha=.18;c.font='bold 22px Arial Black';c.textAlign='right';c.fillText('BTAJ MX',S-16,S-16);c.globalAlpha=1;
+      c.strokeStyle=m.hex;c.lineWidth=8;c.shadowColor=m.hex;c.shadowBlur=22;c.strokeRect(4,4,S-8,S-8);c.shadowBlur=0;
+      tex.needsUpdate=true;
+    };
+    img.src=m.img;
+  }
+  return tex;
+}
+
+
+updateSplash(55,'CONSTRUYENDO EL BARRIO...');
+// 3x3 bloques centrados en -22,0,22
+const BCX=[-22,0,22],BCZ=[-22,0,22];
+const BHalf=6.2; // colisionador
+const blockColliders=[];
+BCX.forEach(bx=>BCZ.forEach(bz=>blockColliders.push({minX:bx-BHalf,maxX:bx+BHalf,minZ:bz-BHalf,maxZ:bz+BHalf})));
+
+// Ground
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(180,180),new THREE.MeshLambertMaterial({map:RT,color:0xbbbbbb}));
+ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+
+// Sidewalks
+BCX.forEach(bx=>BCZ.forEach(bz=>{
+  const sw=new THREE.Mesh(new THREE.PlaneGeometry(14.5,14.5),new THREE.MeshLambertMaterial({map:CT,color:0x999999}));
+  sw.rotation.x=-Math.PI/2;sw.position.set(bx,.013,bz);sw.receiveShadow=true;scene.add(sw);
+}));
+
+// Road dashes
+const dM=new THREE.MeshBasicMaterial({color:0xf5a500,transparent:true,opacity:.22,depthWrite:false});
+[-22,0,22].forEach(x=>{for(let z=-40;z<40;z+=4){const d=new THREE.Mesh(new THREE.PlaneGeometry(.15,1.9),dM);d.rotation.x=-Math.PI/2;d.position.set(x,.02,z);scene.add(d);}});
+[-22,0,22].forEach(z=>{for(let x=-40;x<40;x+=4){const d=new THREE.Mesh(new THREE.PlaneGeometry(1.9,.15),dM);d.rotation.x=-Math.PI/2;d.position.set(x,.02,z);scene.add(d);}});
+
+
+updateSplash(65,'LEVANTANDO EDIFICIOS...');
+const muralZones=[];
+const BH=[[11,14,9],[13,17,10],[9,12,8]];
+const BW=12,BD=12;
+const muralDefs=[
+  {bi:0,bj:0,face:'pz',mural:MURALS[0]},
+  {bi:0,bj:1,face:'nx',mural:MURALS[1]},
+  {bi:0,bj:2,face:'nz',mural:MURALS[2]},
+  {bi:1,bj:0,face:'px',mural:MURALS[3]},
+  {bi:1,bj:1,face:'pz',mural:MURALS[4]},
+  {bi:1,bj:2,face:'nx',mural:MURALS[5]},
+  {bi:2,bj:0,face:'px',mural:MURALS[6]},
+  {bi:2,bj:1,face:'nz',mural:MURALS[7]},
+];
+
+BCX.forEach((bx,bi)=>BCZ.forEach((bz,bj)=>{
+  const h=BH[bi][bj],ti=(bi*3+bj)%4;
+  const assign=muralDefs.find(m=>m.bi===bi&&m.bj===bj);
+  const tone=22+Math.floor(h*.55);
+  const col=new THREE.Color().setHSL(.65,.12,tone/255);
+  const mats=[
+    new THREE.MeshLambertMaterial({map:TX[ti],color:col}),
+    new THREE.MeshLambertMaterial({map:TX[ti],color:col}),
+    new THREE.MeshLambertMaterial({color:new THREE.Color().setHSL(.65,.1,(tone+5)/255)}),
+    new THREE.MeshLambertMaterial({color:0x050508}),
+    new THREE.MeshLambertMaterial({map:TX[(ti+1)%4],color:col}),
+    new THREE.MeshLambertMaterial({map:TX[(ti+1)%4],color:col}),
+  ];
+  const mesh=new THREE.Mesh(new THREE.BoxGeometry(BW,h,BD),mats);
+  mesh.position.set(bx,h/2,bz);mesh.castShadow=true;mesh.receiveShadow=true;scene.add(mesh);
+  // Base
+  const base=new THREE.Mesh(new THREE.BoxGeometry(BW+.6,1,BD+.6),new THREE.MeshLambertMaterial({color:0x10111a}));base.position.set(bx,.5,bz);scene.add(base);
+  // Rooftop
+  const roof=new THREE.Mesh(new THREE.BoxGeometry(BW*.55,1,BD*.55),new THREE.MeshLambertMaterial({color:0x10111a}));roof.position.set(bx,h+.5,bz);scene.add(roof);
+  if(Math.random()>.4){
+    const wt=new THREE.Mesh(new THREE.CylinderGeometry(.38,.38,1.8,10),new THREE.MeshLambertMaterial({color:0x18192a}));
+    wt.position.set(bx+1.8,h+.9,bz+1.8);scene.add(wt);
+    const wth=new THREE.Mesh(new THREE.ConeGeometry(.42,.7,10),new THREE.MeshLambertMaterial({color:0x0e0f18}));
+    wth.position.set(bx+1.8,h+2.2,bz+1.8);scene.add(wth);
+  }
+  // Windows — 3 faces
+  [[0,0,BW/2+.02,'z'],[0,0,-(BD/2+.02),'z'],[BW/2+.02,0,0,'x']].forEach(([ox,oy,oz,ax])=>{
+    const wr=Math.floor(h/2.5),wc=Math.floor(BW/1.7);
+    for(let r=0;r<wr;r++) for(let wci=0;wci<wc;wci++){
+      if(Math.random()<.55) continue;
+      const lit=Math.random()>.32;
+      const wm=new THREE.Mesh(new THREE.PlaneGeometry(.4,.52),new THREE.MeshBasicMaterial({color:lit?0xffd050:0x0a0a18,transparent:true,opacity:lit?.88:.28}));
+      if(ax==='z'){wm.position.set(bx-BW/2+(wci+.5)*(BW/wc),(r+.8)*(h/wr),bz+oz);}
+      else{wm.position.set(bx+ox,(r+.8)*(h/wr),bz-BD/2+(wci+.5)*(BD/wc));wm.rotation.y=Math.PI/2;}
+      scene.add(wm);
+    }
+  });
+  // AC unit
+  const ac=new THREE.Mesh(new THREE.BoxGeometry(1.2,.5,.8),new THREE.MeshLambertMaterial({color:0x161820}));
+  ac.position.set(bx-2,h+.25,bz-2);scene.add(ac);
+
+  
+  if(assign){
+    const n={px:new THREE.Vector3(1,0,0),nx:new THREE.Vector3(-1,0,0),pz:new THREE.Vector3(0,0,1),nz:new THREE.Vector3(0,0,-1)}[assign.face];
+    const MW=BW*.92,MH=h*.88;
+    const tex=muralTex(assign.mural);
+    const plane=new THREE.Mesh(new THREE.PlaneGeometry(MW,MH),new THREE.MeshLambertMaterial({map:tex}));
+    plane.position.set(bx+n.x*(BD/2+.07),MH/2+h*.06,bz+n.z*(BD/2+.07));
+    if(assign.face==='pz') plane.rotation.y=0;
+    else if(assign.face==='nz') plane.rotation.y=Math.PI;
+    else if(assign.face==='px') plane.rotation.y=Math.PI/2;
+    else plane.rotation.y=-Math.PI/2;
+    scene.add(plane);
+    // Frame
+    const fM=new THREE.MeshBasicMaterial({color:0x08080e});
+    const fT=.2;
+    [[MW+fT*2,fT,0,MH/2+fT/2],[MW+fT*2,fT,0,-MH/2-fT/2],[fT,MH+fT*2,-MW/2-fT/2,0],[fT,MH+fT*2,MW/2+fT/2,0]].forEach(([fw,fh,ox,oy])=>{
+      const fp=new THREE.Mesh(new THREE.PlaneGeometry(fw,fh),fM);
+      const isZ=assign.face==='pz'||assign.face==='nz';
+      fp.position.set(bx+n.x*(BD/2+.05)+(isZ?ox:0),MH/2+h*.06+oy,bz+n.z*(BD/2+.05)+(!isZ?ox:0));
+      fp.rotation.copy(plane.rotation);scene.add(fp);
+    });
+    // Neon color light (solo si hay pocos murales visibles)
+    if(muralZones.length < 4) {
+      const nl=new THREE.PointLight(parseInt(assign.mural.hex.replace('#',''),16),2,12);
+      nl.position.set(bx+n.x*(BD/2+3),MH*.5,bz+n.z*(BD/2+3));scene.add(nl);
+    }
+    // Neon strip
+    const ns=new THREE.Mesh(new THREE.BoxGeometry(MW,.06,.06),new THREE.MeshBasicMaterial({color:parseInt(assign.mural.hex.replace('#',''),16)}));
+    ns.position.set(bx+n.x*(BD/2+.09),MH+h*.06+.1,bz+n.z*(BD/2+.09));
+    ns.rotation.copy(plane.rotation);scene.add(ns);
+    muralZones.push({pos:new THREE.Vector3(bx+n.x*(BD/2+1),MH*.5,bz+n.z*(BD/2+1)),mural:assign.mural,normal:n,facing:assign.face});
+  }
+}));
+
+
+updateSplash(75,'PLANTANDO ÁRBOLES...');
+function addTree(x,z){
+  const trunkH=.9+Math.random()*.5;
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.06,.1,trunkH,8),new THREE.MeshLambertMaterial({color:0x281a0e}));
+  trunk.position.set(x,trunkH/2,z);trunk.castShadow=true;scene.add(trunk);
+  // 4 capas de cono — MÁS detalle
+  const layers=[
+    {y:trunkH+.3,r:.7,h:.9,col:0x1a3a12},
+    {y:trunkH+.9,r:.56,h:.85,col:0x1e4214},
+    {y:trunkH+1.55,r:.42,h:.8,col:0x224a16},
+    {y:trunkH+2.15,r:.26,h:.7,col:0x265218},
+  ];
+  layers.forEach(l=>{
+    const f=new THREE.Mesh(new THREE.ConeGeometry(l.r,l.h,9),new THREE.MeshLambertMaterial({color:l.col}));
+    f.position.set(x,l.y,z);f.castShadow=true;scene.add(f);
+  });
+  // Tiny berries / accent spheres on top layer
+  for(let i=0;i<3;i++){
+    const angle=Math.random()*Math.PI*2,rad=Math.random()*.3;
+    const b=new THREE.Mesh(new THREE.SphereGeometry(.04,5,5),new THREE.MeshLambertMaterial({color:0xe8321f}));
+    b.position.set(x+Math.cos(angle)*rad,trunkH+2.5,z+Math.sin(angle)*rad);scene.add(b);
+  }
+}
+// Trees at block corners + along streets
+BCX.forEach(bx=>BCZ.forEach(bz=>{
+  [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([sx,sz])=>{
+    if(Math.random()<.15) return;
+    addTree(bx+sx*5.6,bz+sz*5.6);
+  });
+}));
+// Árboles selectivos en calles
+[-16,16].forEach(xi=>{[-16,16].forEach(zi=>{addTree(xi,zi);});});
+[-16,0,16].forEach(xi=>{ if(Math.abs(xi)>4) addTree(xi,-10.5); });
+[-16,0,16].forEach(xi=>{ if(Math.abs(xi)>4) addTree(xi,10.5); });
+
+// Street tags
+function addTag(x,z,txt,rot=0){
+  const cv=document.createElement('canvas');cv.width=256;cv.height=64;
+  const c=cv.getContext('2d');c.clearRect(0,0,256,64);
+  c.globalAlpha=.28;c.fillStyle='#3dedd6';c.font='bold 34px Arial Black';
+  c.textAlign='center';c.textBaseline='middle';c.fillText(txt,128,32);
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(3.5,.88),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false}));
+  m.rotation.x=-Math.PI/2;m.rotation.z=rot;m.position.set(x,.016,z);scene.add(m);
+}
+addTag(-11,-11,'BTAJ MX',.08);addTag(11,-11,'STREETS',-.06);
+addTag(-11,11,'ARTE',.04);addTag(11,11,'MURALES',-.1);
+addTag(0,-11,'BTAJ',0);addTag(0,11,'MX',0);
+addTag(-11,0,'TOUR',Math.PI/2);addTag(11,0,'2025',-Math.PI/2);
+
+// Benches
+[[-9,-18],[-9,18],[9,-18],[9,18],[-18,-9],[18,-9],[-18,9],[18,9]].forEach(([x,z])=>{
+  const b=new THREE.Mesh(new THREE.BoxGeometry(2.2,.1,.6),new THREE.MeshLambertMaterial({color:0x3d2b1f}));
+  b.position.set(x,.25,z);scene.add(b);
+  [-1,1].forEach(s=>{const lg=new THREE.Mesh(new THREE.BoxGeometry(.1,.4,.5),new THREE.MeshLambertMaterial({color:0x2a1a0e}));lg.position.set(x+s*.9,.1,z);scene.add(lg);});
+});
+
+
+updateSplash(85,'VISTIENDO EL AVATAR...');
+const avatar=new THREE.Group();
+
+// Shadow
+const shM=new THREE.Mesh(new THREE.CircleGeometry(.32,16),new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.5,depthWrite:false}));
+shM.rotation.x=-Math.PI/2;shM.position.y=.005;avatar.add(shM);
+
+// Sneakers
+const snkGeo=new THREE.BoxGeometry(.17,.09,.28);
+const snkMat=new THREE.MeshLambertMaterial({color:0xf0f0f0});
+const soleMat=new THREE.MeshLambertMaterial({color:0xe8321f});
+[-1,1].forEach(s=>{
+  const sh=new THREE.Mesh(snkGeo,snkMat);sh.position.set(s*.13,.065,.04);avatar.add(sh);
+  const sl=new THREE.Mesh(new THREE.BoxGeometry(.17,.04,.28),soleMat);sl.position.set(s*.13,.03,.04);avatar.add(sl);
+  // Lace detail
+  const lc=new THREE.Mesh(new THREE.BoxGeometry(.12,.02,.02),new THREE.MeshLambertMaterial({color:0xffffff}));lc.position.set(s*.13,.115,.04);avatar.add(lc);
+});
+
+// Pants + legs
+const pantMat=new THREE.MeshLambertMaterial({color:0x0e0f16});
+const legGeo=new THREE.CylinderGeometry(.088,.092,.72,10);
+const legL=new THREE.Mesh(legGeo,pantMat);legL.position.set(-.13,.46,0);avatar.add(legL);
+const legR=new THREE.Mesh(legGeo,pantMat);legR.position.set(.13,.46,0);avatar.add(legR);
+// Knee details
+[-1,1].forEach(s=>{const kn=new THREE.Mesh(new THREE.SphereGeometry(.07,8,8),pantMat);kn.position.set(s*.13,.46,0);avatar.add(kn);});
+
+// Jacket body
+const jacketMat=new THREE.MeshLambertMaterial({color:0x1e2840});
+const body=new THREE.Mesh(new THREE.CylinderGeometry(.2,.22,.88,12),jacketMat);body.position.y=1.14;avatar.add(body);
+// Jacket zipper strip
+const zip=new THREE.Mesh(new THREE.BoxGeometry(.04,.7,.22),new THREE.MeshLambertMaterial({color:0xe8321f}));zip.position.set(0,1.1,.21);avatar.add(zip);
+// Collar
+const col2=new THREE.Mesh(new THREE.CylinderGeometry(.15,.19,.12,12),new THREE.MeshLambertMaterial({color:0x161e2e}));col2.position.y=1.59;avatar.add(col2);
+
+// Arms with sleeves
+const sleeveMat=new THREE.MeshLambertMaterial({color:0x1e2840});
+const armGeo=new THREE.CylinderGeometry(.075,.075,.62,8);
+const armL=new THREE.Mesh(armGeo,sleeveMat);armL.position.set(-.29,1.1,0);armL.rotation.z=.18;avatar.add(armL);
+const armR=new THREE.Mesh(armGeo,sleeveMat);armR.position.set(.29,1.1,0);armR.rotation.z=-.18;avatar.add(armR);
+// Hands
+const handMat=new THREE.MeshLambertMaterial({color:0xc8956c});
+[-1,1].forEach(s=>{const h2=new THREE.Mesh(new THREE.SphereGeometry(.07,8,8),handMat);h2.position.set(s*.32,.78,0);avatar.add(h2);});
+
+// Neck + head
+const neck=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,.16,8),handMat);neck.position.y=1.71;avatar.add(neck);
+const head=new THREE.Mesh(new THREE.SphereGeometry(.2,14,14),handMat);head.position.y=1.9;avatar.add(head);
+// Ears
+[-1,1].forEach(s=>{const ear=new THREE.Mesh(new THREE.SphereGeometry(.055,6,6),handMat);ear.position.set(s*.195,1.9,.02);avatar.add(ear);});
+// Eyes
+[-1,1].forEach(s=>{const eye=new THREE.Mesh(new THREE.SphereGeometry(.028,6,6),new THREE.MeshBasicMaterial({color:0x0a0a0a}));eye.position.set(s*.08,1.92,.18);avatar.add(eye);});
+
+// Cap
+const capMat=new THREE.MeshLambertMaterial({color:0x0e0f14});
+const cap=new THREE.Mesh(new THREE.CylinderGeometry(.215,.215,.1,12),capMat);cap.position.y=2.02;avatar.add(cap);
+// Cap dome
+const dome=new THREE.Mesh(new THREE.SphereGeometry(.21,12,8,0,Math.PI*2,0,Math.PI*.5),capMat);dome.position.y=2.07;avatar.add(dome);
+// Brim
+const brim2=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,.05,12),capMat);brim2.position.set(.07,1.95,.1);avatar.add(brim2);
+// Red accent on cap
+const capA=new THREE.Mesh(new THREE.BoxGeometry(.06,.12,.22),new THREE.MeshLambertMaterial({color:0xe8321f}));capA.position.set(0,2.02,.21);avatar.add(capA);
+
+// Backpack
+const bpMat=new THREE.MeshLambertMaterial({color:0x0e0f16});
+const bp=new THREE.Mesh(new THREE.BoxGeometry(.24,.4,.14),bpMat);bp.position.set(0,1.14,-.21);avatar.add(bp);
+const bph=new THREE.Mesh(new THREE.BoxGeometry(.22,.1,.14),bpMat);bph.position.set(0,1.36,-.21);avatar.add(bph);
+
+// Direction indicator
+const dirArr=new THREE.Mesh(new THREE.ConeGeometry(.1,.35,8),new THREE.MeshBasicMaterial({color:0xe8321f,transparent:true,opacity:.65}));
+dirArr.rotation.x=Math.PI/2;dirArr.position.set(0,.05,.44);avatar.add(dirArr);
+
+avatar.position.set(0,0,-12);
+scene.add(avatar);
+
+
+const keys={};
+document.addEventListener('keydown',e=>{keys[e.key]=true;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();});
+document.addEventListener('keyup',e=>{keys[e.key]=false;});
+
+// ── JOYSTICK SYSTEM ──────────────────────────────────────────────────────────
+// Cada joystick es 100% independiente — listeners en su propio elemento
+function makeJoystick(wrapEl, baseEl, knobEl, radius) {
+  const R = radius || 48; // radio en px del canvas táctil
+  const DEAD = 0.08;      // dead zone — ignora micro-movimientos
+  const s = {x:0, y:0, rawX:0, rawY:0, active:false, tid:null, cx:0, cy:0};
+
+  function start(e) {
+    e.preventDefault(); e.stopPropagation();
+    if(s.tid !== null) return;
+    const t = e.changedTouches[0];
+    const r = baseEl.getBoundingClientRect();
+    s.tid    = t.identifier;
+    s.active = true;
+    s.cx = r.left + r.width/2;
+    s.cy = r.top  + r.height/2;
+    baseEl.classList.add('pressed');
+  }
+
+  function move(e) {
+    e.preventDefault(); e.stopPropagation();
+    for(const t of e.changedTouches) {
+      if(t.identifier !== s.tid) continue;
+      let dx = t.clientX - s.cx;
+      let dy = t.clientY - s.cy;
+      const dist = Math.hypot(dx, dy);
+      const clamped = Math.min(dist, R);
+      const ang = Math.atan2(dy, dx);
+      const vx = Math.cos(ang) * clamped;
+      const vy = Math.sin(ang) * clamped;
+      // Visual knob
+      knobEl.style.transform = `translate(calc(-50% + ${vx}px), calc(-50% + ${vy}px))`;
+      // Normalize con dead zone
+      const nx = vx/R, ny = vy/R;
+      const mag = Math.hypot(nx,ny);
+      if(mag < DEAD){ s.x=0; s.y=0; }
+      else {
+        // Remap [DEAD..1] -> [0..1] para respuesta más natural
+        const scale = (mag-DEAD)/(1-DEAD);
+        s.x = (nx/mag)*scale;
+        s.y = (ny/mag)*scale;
+      }
+    }
+  }
+
+  function end(e) {
+    for(const t of e.changedTouches) {
+      if(t.identifier !== s.tid) continue;
+      s.tid    = null;
+      s.active = false;
+      s.x = 0; s.y = 0;
+      knobEl.style.transform = 'translate(-50%,-50%)';
+      baseEl.classList.remove('pressed');
+    }
+  }
+
+  // Listeners en el WRAP (zona más grande) para start, en BASE para move/end
+  wrapEl.addEventListener('touchstart', start,  {passive:false});
+  wrapEl.addEventListener('touchmove',  move,   {passive:false});
+  wrapEl.addEventListener('touchend',   end,    {passive:true});
+  wrapEl.addEventListener('touchcancel',end,    {passive:true});
+  return s;
+}
+
+const joy = makeJoystick(
+  document.getElementById('joy-wrap'),
+  document.getElementById('joy-base'),
+  document.getElementById('joy-knob')
+);
+const cj = makeJoystick(
+  document.getElementById('camjoy-wrap'),
+  document.getElementById('camjoy-base'),
+  document.getElementById('camjoy-knob')
+);
+
+// Mouse cam (desktop)
+let mDown=false,lastMX=0,lastMY=0;
+window.addEventListener('mousedown',e=>{mDown=true;lastMX=e.clientX;lastMY=e.clientY;});
+window.addEventListener('mouseup',()=>mDown=false);
+window.addEventListener('mousemove',e=>{if(mDown){camYaw-=(e.clientX-lastMX)*.004;camPitch=Math.max(-.05,Math.min(.9,camPitch-(e.clientY-lastMY)*.003));lastMX=e.clientX;lastMY=e.clientY;}});
+window.addEventListener('contextmenu',e=>e.preventDefault());
+window.addEventListener('wheel',e=>{camDist=Math.max(4,Math.min(20,camDist+e.deltaY*.02));});
+
+
+let camYaw=Math.PI,camPitch=.42,camDist=9;
+const camPos=new THREE.Vector3(0,6,12);
+const lookAtPt=new THREE.Vector3();
+
+
+const AVR=.5;
+function canMove(nx,nz){
+  if(Math.abs(nx)>38||Math.abs(nz)>38) return false;
+  for(const b of blockColliders) if(nx+AVR>b.minX&&nx-AVR<b.maxX&&nz+AVR>b.minZ&&nz-AVR<b.maxZ) return false;
+  return true;
+}
+
+
+let nearMural=null,currentMural=null;
+const seen=new Set();
+const intBtn=document.getElementById('interact-btn');
+function checkProx(){
+  const ap=avatar.position;nearMural=null;let best=8;
+  for(const mz of muralZones){const d=ap.distanceTo(mz.pos);if(d<best){best=d;nearMural=mz.mural;}}
+  intBtn.style.display=nearMural?'block':'none';
+}
+
+
+function openModal(m){
+  currentMural=m;
+  // Imagen
+  const imgEl=document.getElementById('modal-img'),fbEl=document.getElementById('modal-fallback');
+  if(m.img){
+    imgEl.style.display='block'; fbEl.style.display='none';
+    imgEl.onerror=()=>{imgEl.style.display='none';fbEl.style.display='flex';fbEl.textContent=m.emoji;};
+    imgEl.onload=()=>{imgEl.style.display='block';fbEl.style.display='none';};
+    imgEl.src=m.img;
+  } else {
+    imgEl.style.display='none'; fbEl.style.display='flex'; fbEl.textContent=m.emoji;
+  }
+  document.getElementById('modal-left').style.background=`linear-gradient(135deg,${m.hex}cc,${m.hex}33)`;
+  document.getElementById('modal-series-tag').textContent=m.series;
+  // Contenido derecho
+  document.getElementById('modal-title').textContent=m.title;
+  document.getElementById('modal-series-pill').textContent=m.series;
+  document.getElementById('modal-desc').textContent=m.desc;
+  document.getElementById('modal').classList.add('open');
+  if(!seen.has(m.id)){seen.add(m.id);document.getElementById('counter').textContent=`${seen.size} / ${MURALS.length}`;}
+
+
+  // Sincronizar estado del like
+  const likeBtn  = document.getElementById('btn-like');
+  const likeIcon = document.getElementById('btn-like-icon');
+  const likeCnt  = document.getElementById('btn-like-count');
+  const liked    = !!localLikes['mural_' + m.id];
+  likeBtn.classList.toggle('liked', liked);
+  likeIcon.textContent = liked ? '❤️' : '🤍';
+  // Contar likes locales de este mural (simplificado — en producción vendría del backend)
+  likeCnt.textContent = liked ? '1' : '0';
+  buildGallery();
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function interactMural(){if(nearMural)openModal(nearMural);}
+// ── SOCIAL ACTIONS ────────────────────────────────────────────────────────────
+// Likes internos (persisten en sessionStorage durante la visita)
+const localLikes = {};
+try { Object.assign(localLikes, JSON.parse(sessionStorage.getItem('btaj_likes')||'{}')); } catch(e){}
+function saveLikes(){ try{ sessionStorage.setItem('btaj_likes',JSON.stringify(localLikes)); }catch(e){} }
+
+function toggleLike(){
+  if(!currentMural) return;
+  const key='mural_'+currentMural.id;
+  const btn=document.getElementById('btn-like');
+  const icon=document.getElementById('btn-like-icon');
+  const cnt=document.getElementById('btn-like-count');
+  if(localLikes[key]){
+    delete localLikes[key];
+    btn.classList.remove('liked');
+    icon.textContent='🤍';
+    cnt.textContent=Math.max(0,(parseInt(cnt.textContent)||1)-1);
+  } else {
+    localLikes[key]=true;
+    btn.classList.add('liked');
+    icon.textContent='❤️';
+    icon.style.transform='scale(1.5)';
+    setTimeout(()=>{icon.style.transform='';},200);
+    cnt.textContent=(parseInt(cnt.textContent)||0)+1;
+    // Resaltar botón de seguir después del like
+    setTimeout(()=>{
+      const fb=document.getElementById('btn-follow');
+      if(fb){fb.style.outline='2px solid #bc1888';setTimeout(()=>{fb.style.outline='';},2000);}
+    },300);
+  }
+  saveLikes();
+}
+
+function followInstagram(){
+  // Intenta abrir la app nativa de Instagram primero
+  const appUrl='instagram://user?username=btaj_mx';
+  const webUrl='https://www.instagram.com/btaj_mx/';
+  const a=document.createElement('a');
+  a.href=appUrl; a.style.display='none';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>window.open(webUrl,'_blank'),600);
+}
+
+function openInInstagram(){
+  const url=currentMural?.ig?.postUrl||'https://www.instagram.com/btaj_mx/';
+  window.open(url,'_blank');
+}
+
+function shareNow(){
+  if(!currentMural) return;
+  const text=`🎨 ${currentMural.title} — ${currentMural.series}\n\n${currentMural.desc}\n\n🏙️ Explora el barrio virtual de @btaj_mx:\n${location.href}\n\n#btajmx #arteurbanomx #ilustracion #mma #wrestling #futbol`;
+  if(navigator.share){
+    navigator.share({title:`BTAJ MX — ${currentMural.title}`,text,url:location.href}).catch(()=>{});
+  } else {
+    navigator.clipboard?.writeText(text+'\n'+location.href)
+      .then(()=>alert('¡Copiado! Pégalo donde quieras compartirlo.')).catch(()=>{});
+  }
+}
+// Swipe to close
+let swY=null;
+document.getElementById('modal-card').addEventListener('touchstart',e=>{swY=e.touches[0].clientY;});
+document.getElementById('modal-card').addEventListener('touchmove',e=>{if(swY&&e.touches[0].clientY-swY>60)closeModal();});
+document.getElementById('modal-card').addEventListener('touchend',()=>{swY=null;});
+
+
+function buildGallery(){
+  const grid=document.getElementById('gallery-grid');grid.innerHTML='';
+  MURALS.forEach(m=>{
+    const card=document.createElement('div');card.className='g-card'+(seen.has(m.id)?' seen':'');
+    card.innerHTML=`
+      <div class="g-card-fallback" style="background:linear-gradient(135deg,${m.hex}cc,${m.hex}33);display:${m.img?'none':'flex'}">${m.emoji}</div>
+      ${m.img?`<img src="${m.img}" onerror="this.style.display='none';this.previousElementSibling.style.display='flex'">`:''}
+      <div class="g-card-info"><div class="g-card-title">${m.title}</div><div class="g-card-series">${m.series}</div></div>
+      <div class="g-card-seen"></div>`;
+    card.onclick=()=>{closeGallery();openModal(m);};
+    grid.appendChild(card);
+  });
+}
+function openGallery(){buildGallery();document.getElementById('gallery').classList.add('open');}
+function closeGallery(){document.getElementById('gallery').classList.remove('open');}
+
+
+const mmC=document.getElementById('mm'),mmX=mmC.getContext('2d');
+const MM=96,WD=80;
+function drawMinimap(){
+  mmX.clearRect(0,0,MM,MM);mmX.fillStyle='#0a0a12';mmX.fillRect(0,0,MM,MM);
+  const s=MM/WD,ox=WD/2;
+  // Calles (más claras para diferenciarse del fondo)
+  [-22,0,22].forEach(x=>{mmX.fillStyle='#1e2235';mmX.fillRect((x+ox-1.5)*s,0,3*s,MM);});
+  [-22,0,22].forEach(z=>{mmX.fillStyle='#1e2235';mmX.fillRect(0,(z+ox-1.5)*s,MM,3*s);});
+  // Intersecciones
+  [-22,0,22].forEach(x=>[-22,0,22].forEach(z=>{mmX.fillStyle='#252840';mmX.fillRect((x+ox-1.5)*s,(z+ox-1.5)*s,3*s,3*s);}));
+  // Bloques de edificios
+  BCX.forEach(bx=>BCZ.forEach(bz=>{
+    mmX.fillStyle='#2a2d42';mmX.fillRect((bx+ox-6)*s,(bz+ox-6)*s,12*s,12*s);
+    mmX.fillStyle='#22243a';mmX.fillRect((bx+ox-5.5)*s,(bz+ox-5.5)*s,11*s,11*s);
+  }));
+  // Murales — punto más grande con glow visual
+  muralZones.forEach(mz=>{
+    const visited = seen.has(mz.mural.id);
+    const mx=(mz.pos.x+ox)*s, mz2=(mz.pos.z+ox)*s;
+    if(visited){
+      mmX.beginPath();mmX.arc(mx,mz2,5,0,Math.PI*2);
+      mmX.fillStyle=mz.mural.hex+'44';mmX.fill();
+    }
+    mmX.beginPath();mmX.arc(mx,mz2,visited?3:2.5,0,Math.PI*2);
+    mmX.fillStyle=visited?mz.mural.hex:'#44465a';mmX.fill();
+  });
+  // Avatar — más visible
+  const ax=(avatar.position.x+ox)*s,az=(avatar.position.z+ox)*s;
+  // Halo
+  mmX.beginPath();mmX.arc(ax,az,6,0,Math.PI*2);
+  mmX.fillStyle='#e8321f22';mmX.fill();
+  // Punto
+  mmX.beginPath();mmX.arc(ax,az,3.5,0,Math.PI*2);
+  mmX.fillStyle='#e8321f';mmX.fill();
+  // Flecha de dirección
+  mmX.save();mmX.translate(ax,az);mmX.rotate(-avatarFacing);
+  mmX.beginPath();mmX.moveTo(0,-8);mmX.lineTo(2.5,-3);mmX.lineTo(-2.5,-3);mmX.closePath();
+  mmX.fillStyle='#e8321f';mmX.fill();mmX.restore();
+}
+
+
+const clock=new THREE.Clock();
+let walkT=0,avatarFacing=0,targetFacing=0;
+
+function loop(){
+  requestAnimationFrame(loop);
+  const dt=Math.min(clock.getDelta(),.05);
+  // Camera joy
+  const CS=1.4;
+  if(cj.active||Math.abs(cj.x)>.04||Math.abs(cj.y)>.04){
+    camYaw-=cj.x*CS*dt;
+    camPitch=Math.max(-.05,Math.min(.9,camPitch-cj.y*CS*dt));
+  }
+  // Move
+  const fwd=new THREE.Vector3(-Math.sin(camYaw),0,-Math.cos(camYaw));
+  const right=new THREE.Vector3(Math.cos(camYaw),0,-Math.sin(camYaw));
+  let mx=0,mz=0;
+  if(keys['ArrowUp']||keys['w']||keys['W']){mx+=fwd.x;mz+=fwd.z;}
+  if(keys['ArrowDown']||keys['s']||keys['S']){mx-=fwd.x;mz-=fwd.z;}
+  if(keys['ArrowLeft']||keys['a']||keys['A']){mx-=right.x;mz-=right.z;}
+  if(keys['ArrowRight']||keys['d']||keys['D']){mx+=right.x;mz+=right.z;}
+  if(joy.active||Math.abs(joy.x)>.04||Math.abs(joy.y)>.04){mx+=fwd.x*(-joy.y)+right.x*joy.x;mz+=fwd.z*(-joy.y)+right.z*joy.x;}
+  const SPEED=3.8,moving=Math.hypot(mx,mz)>.01;
+  if(moving){
+    const len=Math.hypot(mx,mz);mx/=len;mz/=len;
+    const nx=avatar.position.x+mx*SPEED*dt,nz=avatar.position.z+mz*SPEED*dt;
+    if(canMove(nx,avatar.position.z))avatar.position.x=nx;
+    if(canMove(avatar.position.x,nz))avatar.position.z=nz;
+    targetFacing=Math.atan2(mx,mz);walkT+=dt*5;
+    // Animate legs + arms
+    legL.rotation.x=Math.sin(walkT)*.58;legR.rotation.x=-Math.sin(walkT)*.58;
+    armL.rotation.x=-Math.sin(walkT)*.4;armR.rotation.x=Math.sin(walkT)*.4;
+    avatar.position.y=Math.abs(Math.sin(walkT))*.05;
+  }else{
+    legL.rotation.x*=.82;legR.rotation.x*=.82;armL.rotation.x*=.82;armR.rotation.x*=.82;
+    avatar.position.y*=.82;
+  }
+  let diff=targetFacing-avatarFacing;
+  while(diff>Math.PI)diff-=Math.PI*2;while(diff<-Math.PI)diff+=Math.PI*2;
+  avatarFacing+=diff*.10;avatar.rotation.y=avatarFacing;
+  // Camera
+  const sinY=Math.sin(camYaw),cosY=Math.cos(camYaw);
+  const sinP=Math.sin(camPitch*Math.PI*.5),cosP=Math.cos(camPitch*Math.PI*.5);
+  camPos.x+=(avatar.position.x+sinY*cosP*camDist-camPos.x)*.08;
+  camPos.y+=(avatar.position.y+sinP*camDist+1-camPos.y)*.08;
+  camPos.z+=(avatar.position.z+cosY*cosP*camDist-camPos.z)*.08;
+  camera.position.copy(camPos);
+  lookAtPt.set(avatar.position.x,avatar.position.y+1.1,avatar.position.z);
+  camera.lookAt(lookAtPt);
+  checkProx();drawMinimap();
+  renderer.render(scene,camera);
+}
+
+
+updateSplash(95,'LISTO...');
+buildGallery();
+setTimeout(()=>{
+  updateSplash(100,'¡BIENVENIDO!');
+  setTimeout(()=>{
+    hideSplash();
+    // Mostrar tutorial si es la primera vez
+    try{ if(!localStorage.getItem('btaj_tut')) showTutorial(); }catch(e){ showTutorial(); }
+  },400);
+},600);
+setTimeout(()=>{document.getElementById('hint').style.opacity='0';},7000);
+loop();
+</script>
+</body>
+</html>

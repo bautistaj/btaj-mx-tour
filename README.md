@@ -1,96 +1,69 @@
 # BTAJ MX — Street Tour 3D
 
+Experiencia inmersiva 3D construida con Three.js para explorar murales de arte urbano de [@btaj_mx](https://www.instagram.com/btaj_mx/). Camina por un barrio virtual, descubre los murales y accede directo a cada post de Instagram.
+
 ## Estructura
+
 ```
 btaj-tour/
-├── docker-compose.yml   # Configuración del contenedor
-├── nginx.conf           # Servidor web dentro del contenedor
-├── deploy.sh            # Script de despliegue
+├── nginx.conf
 └── www/
     ├── btaj-3d-tour.html
+    ├── manifest.json
     └── imgs/
-        ├── IMG_2030.PNG
-        ├── IMG_2097.PNG
-        ├── IMG_2135.PNG
-        ├── IMG_2140.PNG
-        ├── IMG_2141.PNG
-        ├── IMG_2144.PNG
-        └── IMG_2146.PNG
 ```
 
-## Deploy inicial
+## Despliegue en VPS con nginx
 
-### 1. Subir archivos al servidor
+### 1. Copiar archivos al servidor
+
 ```bash
-# Desde tu máquina local
-scp -r btaj-tour/ usuario@IP_SERVIDOR:~/
+scp -r www/ usuario@IP_SERVIDOR:/var/www/btaj-tour/
 ```
 
-### 2. En el servidor
+### 2. Configurar nginx
+
 ```bash
-cd ~/btaj-tour
-./deploy.sh
+sudo nano /etc/nginx/sites-available/btaj-tour
 ```
 
-### 3. Verificar que funciona
-```bash
-curl http://localhost:8080
-# Debe devolver el HTML del tour
-```
-
----
-
-## Configurar subdominio con Nginx reverse proxy
-
-Si ya tienes Nginx instalado en el servidor (fuera de Docker):
+Pega el contenido de `nginx.conf` del repo y ajusta `server_name`:
 
 ```nginx
-# /etc/nginx/sites-available/btaj-tour
 server {
     listen 80;
-    server_name tour.bautistaj.dev;
+    server_name tour.tudominio.com;
+    root /var/www/btaj-tour;
+    index btaj-3d-tour.html;
+
+    location ~* \.(png|jpg|jpeg|webp)$ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
 
     location / {
-        proxy_pass http://localhost:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
+        try_files $uri $uri/ /btaj-3d-tour.html;
     }
 }
 ```
 
 ```bash
 sudo ln -s /etc/nginx/sites-available/btaj-tour /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl reload nginx
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
-### HTTPS gratis con Certbot
+### 3. HTTPS con Certbot
+
 ```bash
 sudo apt install certbot python3-certbot-nginx -y
-sudo certbot --nginx -d tour.bautistaj.dev
-# Sigue las instrucciones — certbot configura HTTPS automáticamente
+sudo certbot --nginx -d tour.tudominio.com
 ```
 
 ---
 
-## Actualizar el tour
+## DNS (Namecheap)
 
-Cuando tengas cambios en el HTML o imágenes:
-
-```bash
-# Desde tu máquina local — reemplaza los archivos
-scp www/btaj-3d-tour.html usuario@IP:~/btaj-tour/www/
-scp www/imgs/* usuario@IP:~/btaj-tour/www/imgs/
-
-# En el servidor — reiniciar (opcional, nginx sirve directo desde el volumen)
-docker compose restart
-```
-
----
-
-## Namecheap DNS
-
-En Advanced DNS de bautistaj.dev agregar:
+En Advanced DNS de tu dominio agregar:
 
 | Type     | Host | Value          | TTL       |
 |----------|------|----------------|-----------|
@@ -100,13 +73,13 @@ Propagación: 5 min a 2 horas.
 
 ---
 
-## Comandos útiles Docker
+## Actualizar contenido
+
+Cuando haya cambios en el HTML o imágenes:
 
 ```bash
-docker compose ps          # Ver estado
-docker compose logs -f     # Ver logs en tiempo real
-docker compose down        # Parar el contenedor
-docker compose up -d       # Levantar de nuevo
-docker stats btaj-tour     # Ver uso de CPU/memoria
+scp www/btaj-3d-tour.html usuario@IP:/var/www/btaj-tour/
+scp www/imgs/* usuario@IP:/var/www/btaj-tour/imgs/
 ```
-# btaj-mx-tour
+
+nginx sirve los archivos directo — no hace falta reiniciar nada.
