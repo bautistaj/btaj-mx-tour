@@ -1326,6 +1326,13 @@ setTimeout(()=>{document.getElementById('hint').style.opacity='0';},7000);
 loop();
 function showTutorial(){ document.getElementById('tutorial').classList.remove('hide'); }
 function closeTutorial(){ document.getElementById('tutorial').classList.add('hide'); try{ localStorage.setItem('btaj_tut','1'); }catch(e){} }
+
+// Recuperar escena WebGL al volver de Instagram en mobile
+renderer.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); }, false);
+renderer.domElement.addEventListener('webglcontextrestored', () => { loop(); }, false);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) renderer.render(scene, camera);
+});
 </script>
 </body>
 </html>
