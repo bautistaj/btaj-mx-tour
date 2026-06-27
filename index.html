@@ -337,7 +337,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#050508;touch-action
   <div id="logo" onclick="window.open('https://www.instagram.com/btaj_mx/','_blank')"
     style="cursor:pointer">BTAJ<em>MX</em></div>
   <div style="display:flex;align-items:center;gap:8px">
-    <div id="counter">0 / 8</div>
+    <div id="counter">0 / –</div>
     <div id="hud-ig"
       onclick="window.open('https://www.instagram.com/btaj_mx/','_blank')"
       style="cursor:pointer;pointer-events:all;
@@ -490,26 +490,26 @@ const MURALS=[
    hex:"#c0392b", emoji:"⚔️",img:"imgs/ehonda.jpeg",
    ig:{likes:3763,comments:148,reach:24800,postUrl:"https://www.instagram.com/p/DYQgjBUEb9y/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135492"}},
 
-
   {id:2,title:"Dhalsim",series:"ARCADE",
    desc:"Originario de Kerala, India, es un maestro del yoga que utiliza poderes místicos como extender sus extremidades, escupir fuego y teletransportarse para mantener a sus rivales a distancia.",
    hex:"#1e8449",emoji:"🤼",img:"imgs/dhalsim.jpeg",
    ig:{likes:1483,comments:67,reach:9200,postUrl:"https://www.instagram.com/p/DY0nKlhkWoF/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135493"}},
   
-   {id:3,title:"Zangief",series:"ARCADE",
-   desc:"Zangief, apodado el 'Ciclón Rojo', es un personaje ficticio de la saga Street Fighter de Capcom, debutando en Street Fighter II: The World Warrior (1991).  Es un luchador profesional de Sambo y lucha libre originario de la antigua URSS",
-   hex:"#1a5276",emoji:"🥊",img:"imgs/zangief.jpeg",
-   ig:{likes:1150,comments:43,reach:7600,postUrl:"https://www.instagram.com/p/DYiiGCXkbCB/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135494"}},
+   {id:3,title:"Canavati VS Goyito Perez",series:"MMA",
+   desc:"Gran conbate en MMA México 8, El tigre Canavati VS Goyito Perez",
+   hex:"#1a5276", emoji:"🥊",img:"imgs/el_tigre_vs_goyito.jpeg",
+   ig:{likes:1150,comments:43,reach:7600,postUrl:"https://www.instagram.com/p/DaBgIqHER5I/?utm_source=ig_web_copy_link&igsh=NTc4MTIwNjQ2YQ==",mediaId:"17854360229135494"}},
   
    {id:4,title:"Blanka",series:"ARCADE",
    desc:"Es un hombre feral de la selva brasileña con piel verde y la capacidad de generar electricidad, siendo originalmente un niño llamado Jimmy que sobrevivió a un accidente aéreo en el Amazonas. ",
    hex:"#117a65",emoji:"⚽",img:"imgs/blanka.jpeg",
    ig:{likes:612,comments:29,reach:4100,postUrl:"https://www.instagram.com/p/DZGlNHbkeYx/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135495"}},
 
-  {id:5,title:"Ilia vs Gaethje",series:"MMA",
-   desc:"Una de las grandes peleas de la historia de la UFC.",
-   hex:"#196f3d",emoji:"🇲🇽",img:"imgs/ilia_vs_gaethje.jpeg",
-   ig:{likes:2023,comments:88,reach:14500,postUrl:"https://www.instagram.com/p/DZjWC_1ERth/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135496"}},
+   {id:5,title:"Panchito Ortiz",series:"MMA",
+   desc:"Representante de las MMA en México y gran ejemplo a seguir.",
+   hex:"#4a235a",emoji:"🏆",img:"imgs/panchito_ortiz.png",
+   ig:{likes:582,comments:22,reach:3900,postUrl:"https://www.instagram.com/p/DZqwcU3kSV4/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135499"}},
+ 
 
   {id:6,title:"Gane vs Poatan",series:"MMA",
    desc:"Una pelea que pudo ser histórica al tener el primer triple campeon de la UFC.",
@@ -521,11 +521,19 @@ const MURALS=[
    hex:"#784212",emoji:"🚲",img:"imgs/el_catrin.png",
    ig:{likes:671,comments:31,reach:4800,postUrl:"https://www.instagram.com/p/DZYqb4XkUwj/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135498"}},
 
-  {id:8,title:"Panchito Ortiz",series:"MMA",
-   desc:"Representante de las MMA en México y gran ejemplo a seguir.",
-   hex:"#4a235a",emoji:"🏆",img:"imgs/panchito_ortiz.png",
-   ig:{likes:582,comments:22,reach:3900,postUrl:"https://www.instagram.com/p/DZqwcU3kSV4/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135499"}},
+    {id:8,title:"Ilia vs Gaethje",series:"MMA",
+   desc:"Una de las grandes peleas de la historia de la UFC.",
+   hex:"#196f3d",emoji:"🇲🇽",img:"imgs/ilia_vs_gaethje.jpeg",
+   ig:{likes:2023,comments:88,reach:14500,postUrl:"https://www.instagram.com/p/DZjWC_1ERth/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",mediaId:"17854360229135496"}},
+
+  {id:9,title:"Zangief",series:"ARCADE",
+   desc:"El ciclón rojo de Rusia. Luchador de lucha libre soviética y uno de los personajes más icónicos de Street Fighter.",
+   hex:"#922b21",emoji:"🤼",img:"imgs/zangief.jpeg",
+   ig:{likes:890,comments:41,reach:5800,postUrl:"https://www.instagram.com/btaj_mx/",mediaId:"17854360229135500"}},
+
 ];
+
+document.getElementById('counter').textContent = '0 / ' + MURALS.length;
 
 // ── INSTAGRAM METRICS LOADER ──────────────────────────────────────────────────
 async function loadIGMetrics() {
@@ -772,20 +780,46 @@ updateSplash(65,'LEVANTANDO EDIFICIOS...');
 const muralZones=[];
 const BH=[[11,14,9],[13,17,10],[9,12,8]];
 const BW=12,BD=12;
+// Regla: cada alley interior tiene como máximo UN mural.
+// Caras interiores usadas por alley:
+//   Z1(z≈-11): (0,0)pz · (1,1)nz · (2,0)pz    — ningún par enfrenta el mismo alley
+//   Z2(z≈+11): (0,1)pz · (1,1)pz · (2,2)nz
+//   X1(x≈-11): (0,2)px
+//   X2(x≈+11): (1,0)px · (2,1)nx · (1,2)px
+// Caras exteriores (sin conflicto): nx de bi=0, px de bi=2, nz de bj=0, pz de bj=2
 const muralDefs=[
-  {bi:0,bj:0,face:'pz',mural:MURALS[0]},
-  {bi:0,bj:1,face:'nx',mural:MURALS[1]},
-  {bi:0,bj:2,face:'nz',mural:MURALS[2]},
-  {bi:1,bj:0,face:'px',mural:MURALS[3]},
-  {bi:1,bj:1,face:'pz',mural:MURALS[4]},
-  {bi:1,bj:2,face:'nx',mural:MURALS[5]},
-  {bi:2,bj:0,face:'px',mural:MURALS[6]},
-  {bi:2,bj:1,face:'nz',mural:MURALS[7]},
+  // (0,0) x=-22 z=-22
+  {bi:0,bj:0,face:'pz',mural:MURALS[0]},  // zona (-22,−15) → alley Z1-col0
+  {bi:0,bj:0,face:'nx',mural:MURALS[5]},  // zona (−29,−22) → exterior
+  // (0,1) x=-22 z=0
+  {bi:0,bj:1,face:'pz',mural:MURALS[2]},  // zona (−22, 7)  → alley Z2-col0
+  {bi:0,bj:1,face:'nx',mural:MURALS[6]},  // zona (−29,  0) → exterior
+  // (0,2) x=-22 z=22
+  {bi:0,bj:2,face:'px',mural:MURALS[2]},  // zona (−15, 22) → alley X1-fil2
+  {bi:0,bj:2,face:'pz',mural:MURALS[7]},  // zona (−22, 29) → exterior
+  // (1,0) x=0   z=-22
+  {bi:1,bj:0,face:'px',mural:MURALS[1]},  // zona (  7,−22) → alley X2-fil0
+  {bi:1,bj:0,face:'nz',mural:MURALS[8]},  // zona (  0,−29) → exterior
+  // (1,1) x=0   z=0  (centro — dos alleys distintos, edificio bloquea el acceso entre ellos)
+  {bi:1,bj:1,face:'pz',mural:MURALS[4]},  // zona (  0,  7) → alley Z2-col1
+  {bi:1,bj:1,face:'nz',mural:MURALS[0]},  // zona (  0, −7) → alley Z1-col1
+  // (1,2) x=0   z=22
+  {bi:1,bj:2,face:'px',mural:MURALS[5]},  // zona (  7, 22) → alley X2-fil2
+  {bi:1,bj:2,face:'pz',mural:MURALS[1]},  // zona (  0, 29) → exterior
+  // (2,0) x=22  z=-22
+  {bi:2,bj:0,face:'pz',mural:MURALS[6]},  // zona ( 22,−15) → alley Z1-col2
+  {bi:2,bj:0,face:'px',mural:MURALS[3]},  // zona ( 29,−22) → exterior
+  // (2,1) x=22  z=0
+  {bi:2,bj:1,face:'nx',mural:MURALS[7]},  // zona ( 15,  0) → alley X2-fil1
+  {bi:2,bj:1,face:'px',mural:MURALS[3]},  // zona ( 29,  0) → exterior
+  // (2,2) x=22  z=22
+  {bi:2,bj:2,face:'nz',mural:MURALS[8]},  // zona ( 22, 15) → alley Z2-col2
+  {bi:2,bj:2,face:'px',mural:MURALS[4]},  // zona ( 29, 22) → exterior
 ];
 
 BCX.forEach((bx,bi)=>BCZ.forEach((bz,bj)=>{
   const h=BH[bi][bj],ti=(bi*3+bj)%4;
-  const assign=muralDefs.find(m=>m.bi===bi&&m.bj===bj);
+  const assigns=muralDefs.filter(m=>m.bi===bi&&m.bj===bj);
   const tone=22+Math.floor(h*.55);
   const col=new THREE.Color().setHSL(.65,.12,tone/255);
   const mats=[
@@ -825,7 +859,7 @@ BCX.forEach((bx,bi)=>BCZ.forEach((bz,bj)=>{
   ac.position.set(bx-2,h+.25,bz-2);scene.add(ac);
 
   
-  if(assign){
+  assigns.forEach(assign=>{
     const n={px:new THREE.Vector3(1,0,0),nx:new THREE.Vector3(-1,0,0),pz:new THREE.Vector3(0,0,1),nz:new THREE.Vector3(0,0,-1)}[assign.face];
     const MW=BW*.92,MH=h*.88;
     const tex=muralTex(assign.mural);
@@ -855,7 +889,7 @@ BCX.forEach((bx,bi)=>BCZ.forEach((bz,bj)=>{
     ns.position.set(bx+n.x*(BD/2+.09),MH+h*.06+.1,bz+n.z*(BD/2+.09));
     ns.rotation.copy(plane.rotation);scene.add(ns);
     muralZones.push({pos:new THREE.Vector3(bx+n.x*(BD/2+1),MH*.5,bz+n.z*(BD/2+1)),mural:assign.mural,normal:n,facing:assign.face});
-  }
+  });
 }));
 
 
@@ -1096,7 +1130,11 @@ const seen=new Set();
 const intBtn=document.getElementById('interact-btn');
 function checkProx(){
   const ap=avatar.position;nearMural=null;let best=8;
-  for(const mz of muralZones){const d=ap.distanceTo(mz.pos);if(d<best){best=d;nearMural=mz.mural;}}
+  for(const mz of muralZones){
+    const dx=ap.x-mz.pos.x,dz=ap.z-mz.pos.z;
+    const d=Math.sqrt(dx*dx+dz*dz);
+    if(d<best){best=d;nearMural=mz.mural;}
+  }
   intBtn.style.display=nearMural?'block':'none';
 }
 
@@ -1106,10 +1144,14 @@ function openModal(m){
   // Imagen
   const imgEl=document.getElementById('modal-img'),fbEl=document.getElementById('modal-fallback');
   if(m.img){
-    imgEl.style.display='block'; fbEl.style.display='none';
     imgEl.onerror=()=>{imgEl.style.display='none';fbEl.style.display='flex';fbEl.textContent=m.emoji;};
     imgEl.onload=()=>{imgEl.style.display='block';fbEl.style.display='none';};
     imgEl.src=m.img;
+    if(imgEl.complete && imgEl.naturalHeight>0){
+      imgEl.style.display='block'; fbEl.style.display='none';
+    } else {
+      imgEl.style.display='none'; fbEl.style.display='flex'; fbEl.textContent=m.emoji;
+    }
   } else {
     imgEl.style.display='none'; fbEl.style.display='flex'; fbEl.textContent=m.emoji;
   }
@@ -1280,7 +1322,7 @@ function loop(){
   if(keys['ArrowLeft']||keys['a']||keys['A']){mx-=right.x;mz-=right.z;}
   if(keys['ArrowRight']||keys['d']||keys['D']){mx+=right.x;mz+=right.z;}
   if(joy.active||Math.abs(joy.x)>.04||Math.abs(joy.y)>.04){mx+=fwd.x*(-joy.y)+right.x*joy.x;mz+=fwd.z*(-joy.y)+right.z*joy.x;}
-  const SPEED=3.8,moving=Math.hypot(mx,mz)>.01;
+  const SPEED=5.5,moving=Math.hypot(mx,mz)>.01;
   if(moving){
     const len=Math.hypot(mx,mz);mx/=len;mz/=len;
     const nx=avatar.position.x+mx*SPEED*dt,nz=avatar.position.z+mz*SPEED*dt;
